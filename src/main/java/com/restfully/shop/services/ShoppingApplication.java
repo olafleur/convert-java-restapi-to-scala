@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ShoppingApplication extends Application {
-   private Set<Object> singletons = new HashSet<Object>();
-   private Set<Class<?>> empty = new HashSet<Class<?>>();
+   private Set<Object> singletons = new HashSet<>();
+   private Set<Class<?>> empty = new HashSet<>();
 
    public ShoppingApplication() {
       singletons.add(new CustomerResource());

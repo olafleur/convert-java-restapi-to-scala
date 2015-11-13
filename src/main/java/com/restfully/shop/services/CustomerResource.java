@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/customers")
 public class CustomerResource {
-   private Map<Integer, Customer> customerDB = new ConcurrentHashMap<Integer, Customer>();
+   private Map<Integer, Customer> customerDB = new ConcurrentHashMap<>();
    private AtomicInteger idCounter = new AtomicInteger();
 
    public CustomerResource() {
@@ -53,11 +53,7 @@ public class CustomerResource {
       if (customer == null) {
          throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
-      return new StreamingOutput() {
-         public void write(OutputStream outputStream) throws IOException, WebApplicationException {
-            outputCustomer(outputStream, customer);
-         }
-      };
+      return outputStream -> outputCustomer(outputStream, customer);
    }
 
    @PUT
