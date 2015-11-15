@@ -4,12 +4,12 @@ import java.util
 import javax.ws.rs.core.Application
 
 class ShoppingApplication extends Application {
-   var singletons:java.util.Set[AnyRef] = new util.HashSet[AnyRef]()
+   var singletons = new util.HashSet[AnyRef]()
    val empty = new util.HashSet[Class[_]]()
 
    singletons.add(new CustomerResource)
 
-   override def getSingletons: util.Set[AnyRef] = singletons
+   override def getSingletons = singletons
 
-   override def getClasses: util.Set[Class[_]] = empty
+   override def getClasses = empty
 }

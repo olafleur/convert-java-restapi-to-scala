@@ -1,6 +1,6 @@
 package com.restfully.shop.services
 
-import java.io.{InputStream, OutputStream, PrintStream}
+import java.io.{InputStream, OutputStream}
 import java.net.URI
 import java.util.concurrent.atomic.AtomicInteger
 import javax.ws.rs.{Consumes, GET, POST, PUT, Path, PathParam, Produces, WebApplicationException}
@@ -23,7 +23,7 @@ class CustomerResource() {
     val customer = readCustomer(inputStream)
     customer.setId(idCounter.incrementAndGet())
     customerDB.put(customer.getId, customer)
-    System.out.println("Created customer " + customer.getId)
+    println("Created customer " + customer.getId)
 
     Response.created(URI.create("/customers/" + customer.getId)).build()
 
@@ -34,13 +34,13 @@ class CustomerResource() {
   @Produces(Array("application/xml"))
   def getCustomer(@PathParam("id") id: Integer) = {
     val customer = customerDB.get(id)
-    if (customer == null) {
+    if (customer.isEmpty) {
       throw new WebApplicationException(Response.Status.NOT_FOUND)
     }
 
     new StreamingOutput() {
       def write(outputStream: OutputStream) {
-        outputCustomer(outputStream, customer.get)
+        outputCustomer(customer.get)
       }
     }
   }
@@ -49,43 +49,46 @@ class CustomerResource() {
   @Path("{id}")
   @Consumes(Array("application/xml"))
   def updateCustomer(@PathParam("id") id: Integer, is: InputStream) = {
-    val update: Customer = readCustomer(is)
-    val current: Customer = customerDB.get(id).get
-    if (current == null) throw new WebApplicationException(Response.Status.NOT_FOUND)
+    val update = readCustomer(is)
 
-    current.setFirstName(update.getFirstName)
-    current.setLastName(update.getLastName)
-    current.setStreet(update.getStreet)
-    current.setState(update.getState)
-    current.setZip(update.getZip)
-    current.setCountry(update.getCountry)
+    customerDB.get(id) match {
+      case Some(current) =>
+        current.setFirstName(update.getFirstName)
+        current.setFirstName(update.getFirstName)
+        current.setLastName(update.getLastName)
+        current.setStreet(update.getStreet)
+        current.setState(update.getState)
+        current.setZip(update.getZip)
+        current.setCountry(update.getCountry)
+      case None => throw new WebApplicationException(Response.Status.NOT_FOUND)
+    }
   }
 
-
-  protected def outputCustomer(os: OutputStream, cust: Customer) {
-    val writer = new PrintStream(os)
-    writer.println("<customer id=\"" + cust.getId + "\">")
-    writer.println("   <first-name>" + cust.getFirstName + "</first-name>")
-    writer.println("   <last-name>" + cust.getLastName + "</last-name>")
-    writer.println("   <street>" + cust.getStreet + "</street>")
-    writer.println("   <city>" + cust.getCity + "</city>")
-    writer.println("   <state>" + cust.getState + "</state>")
-    writer.println("   <zip>" + cust.getZip + "</zip>")
-    writer.println("   <country>" + cust.getCountry + "</country>")
-    writer.println("</customer>")
+  protected def outputCustomer(cust: Customer) {
+    println("<customer id=\"" + cust.getId + "\">")
+    println("   <first-name>" + cust.getFirstName + "</first-name>")
+    println("   <last-name>" + cust.getLastName + "</last-name>")
+    println("   <street>" + cust.getStreet + "</street>")
+    println("   <city>" + cust.getCity + "</city>")
+    println("   <state>" + cust.getState + "</state>")
+    println("   <zip>" + cust.getZip + "</zip>")
+    println("   <country>" + cust.getCountry + "</country>")
+    println("</customer>")
   }
 
-  protected def readCustomer(is: InputStream): Customer = {
+  protected def readCustomer(is: InputStream) = {
     val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
     val doc = builder.parse(is)
     val root = doc.getDocumentElement
     val cust = new Customer()
+    val nodes: NodeList = root.getChildNodes
+
     if (root.getAttribute("id") != null && !root.getAttribute("id").trim().equals(""))
       cust.setId(Integer.valueOf(root.getAttribute("id")))
-    val nodes: NodeList = root.getChildNodes
+
     for (i <- 1 until nodes.getLength) {
-      val element: Element = nodes.item(i) match {
-        case g2: Element => g2
+      val element = nodes.item(i) match {
+        case elem: Element => elem
         case _ => throw new ClassCastException
       }
 
@@ -114,5 +117,4 @@ class CustomerResource() {
 
     cust
   }
-
 }
