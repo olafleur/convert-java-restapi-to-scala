@@ -1,16 +1,7 @@
-Using JAX-RS Annotations
+Convert Java API to Scala
 ========================
-This project is a simple example showing usage of @Path, @GET, PUT, POST, and @PathParam.  It uses pure streaming
-output as well. 
+The aim of this project is to take a [basic REST API Example](https://github.com/resteasy/Resteasy/tree/master/jaxrs/examples/oreilly-workbook/ex03_1) and show that we can convert it to Scala easily.
 
-System Requirements:
--------------------------
-- Maven 2.0.9 or higher
-
-Building the project:
--------------------------
-1. In root directoy
-
-mvn clean install
-
-This will build a WAR and run it with embedded Jetty
+Constraints :
+- The domain object (Customer) must stay in Java
+- The RestEasy test also
