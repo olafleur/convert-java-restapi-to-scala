@@ -6,7 +6,7 @@ import scala.collection.immutable.HashSet
 
 class ShoppingApplication extends Application {
    var singletons = HashSet[Object]()
-   val empty = HashSet[Class]()
+   val empty = HashSet[Class[Any]]()
 
    singletons = singletons + new CustomerResource
 }
