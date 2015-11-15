@@ -1,12 +1,15 @@
 package com.restfully.shop.services
 
+import java.util
 import javax.ws.rs.core.Application
 
-import scala.collection.immutable.HashSet
-
 class ShoppingApplication extends Application {
-   var singletons = HashSet[Object]()
-   val empty = HashSet[Class[Any]]()
+   var singletons:java.util.Set[AnyRef] = new util.HashSet[AnyRef]()
+   val empty = new util.HashSet[Class[_]]()
 
-   singletons = singletons + new CustomerResource
+   singletons.add(new CustomerResource)
+
+   override def getSingletons: util.Set[AnyRef] = singletons
+
+   override def getClasses: util.Set[Class[_]] = empty
 }
