@@ -18,7 +18,7 @@ class CustomerResource() {
   private val idCounter = new AtomicInteger()
 
   @POST
-  @Consumes("application/xml")
+  @Consumes(Array("application/xml"))
   def createCustomer(inputStream: InputStream) = {
     val customer = readCustomer(inputStream)
     customer.setId(idCounter.incrementAndGet())
@@ -31,7 +31,7 @@ class CustomerResource() {
 
   @GET
   @Path("{id}")
-  @Produces("application/xml")
+  @Produces(Array("application/xml"))
   def getCustomer(@PathParam("id") id: Integer) = {
     val customer = customerDB.get(id)
     if (customer == null) {
@@ -47,7 +47,7 @@ class CustomerResource() {
 
   @PUT
   @Path("{id}")
-  @Consumes("application/xml")
+  @Consumes(Array("application/xml"))
   def updateCustomer(@PathParam("id") id: Integer, is: InputStream) = {
     val update: Customer = readCustomer(is)
     val current: Customer = customerDB.get(id).get
