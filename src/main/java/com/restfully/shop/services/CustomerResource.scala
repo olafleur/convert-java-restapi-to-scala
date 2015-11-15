@@ -8,7 +8,7 @@ import javax.ws.rs.core.{Response, StreamingOutput}
 import javax.xml.parsers.DocumentBuilderFactory
 
 import com.restfully.shop.domain.Customer
-import org.w3c.dom.{Element, NodeList}
+import org.w3c.dom.Element
 
 import scala.collection.mutable
 
@@ -34,14 +34,15 @@ class CustomerResource() {
   @Produces(Array("application/xml"))
   def getCustomer(@PathParam("id") id: Integer) = {
     val customer = customerDB.get(id)
-    if (customer.isEmpty) {
-      throw new WebApplicationException(Response.Status.NOT_FOUND)
-    }
 
-    new StreamingOutput() {
-      def write(outputStream: OutputStream) {
-        outputCustomer(customer.get)
+    customer match {
+      case Some(cust) => new StreamingOutput() {
+        def write(outputStream: OutputStream) {
+          outputCustomer(cust)
+        }
       }
+
+      case None => throw new WebApplicationException(Response.Status.NOT_FOUND)
     }
   }
 
@@ -81,12 +82,13 @@ class CustomerResource() {
     val doc = builder.parse(is)
     val root = doc.getDocumentElement
     val cust = new Customer()
-    val nodes: NodeList = root.getChildNodes
+    val nodes = root.getChildNodes
 
     if (root.getAttribute("id") != null && !root.getAttribute("id").trim().equals(""))
       cust.setId(Integer.valueOf(root.getAttribute("id")))
 
-    for (i <- 1 until nodes.getLength) {
+    for (i <- 0 until nodes.getLength) {
+
       val element = nodes.item(i) match {
         case elem: Element => elem
         case _ => throw new ClassCastException
